@@ -1,0 +1,170 @@
+﻿@model Tickets.Models.Ticket
+@{
+    ViewData["Title"] = "Create Ticket";
+    Layout = "~/Views/Shared/MySidebarT.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Ticket</title>
+    <link rel="stylesheet" href="~/css/form-styles.css" />
+    <style>
+        /* Styling the form container */
+        body {
+            background-color: #f4f6f9;
+            font-family: Arial, sans-serif;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .content {
+            max-width: 600px;
+            margin: 1px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            text-align: center;
+            color: #444;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        .form-control:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+        }
+
+        .text-danger {
+            color: #dc3545;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .button-container a {
+            text-decoration: none;
+            color: #fff;
+            background-color: #28a745;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .button-container a:hover {
+            background-color: #218838;
+        }
+
+        /* Responsive design for mobile devices */
+        @@media (max-width: 600px) {
+            .content {
+                width: 90%;
+                margin: 20px auto;
+            }
+
+            .btn-primary,
+            .button-container a {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content">
+        <h2>Create New Ticket</h2>
+       
+        <form asp-action="Create" method="post">
+            <div class="form-group">
+                <label asp-for="AssignedUserId" class="form-label">Assign to User</label>
+                <select asp-for="AssignedUserId" class="form-control" asp-items="ViewBag.UserOptions">
+                    <option value="">Select User</option>
+                </select>
+                <span asp-validation-for="AssignedUserId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AssignedByEmail" class="form-label">Assigned By</label>
+                <select asp-for="AssignedByEmail" class="form-control" asp-items="ViewBag.LeadOptions">
+                    <option value="">Select User</option>
+                </select>
+                <span asp-validation-for="AssignedByEmail" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Subject" class="form-label">Subject</label>
+                <input asp-for="Subject" class="form-control" maxlength="50" />
+                <span asp-validation-for="Subject" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TicketBody" class="form-label">Description</label>
+                <textarea asp-for="TicketBody" class="form-control"></textarea>
+                <span asp-validation-for="TicketBody" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Priority" class="form-label">Priority</label>
+                <select asp-for="Priority" class="form-control" maxlength="10">
+                    <option value="">Select Priority</option>
+                    <option value="High">High</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Low">Low</option>
+                </select>
+                <span asp-validation-for="Priority" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Status" class="form-label">Status</label>
+                <select asp-for="Status" class="form-control" asp-items="ViewBag.StatusOptions">
+                    <option value="">Select Status</option>
+                </select>
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Create Ticket</button>
+        </form>
+    </div>
+</body>
+</html>

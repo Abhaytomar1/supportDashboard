@@ -1,0 +1,195 @@
+﻿@model IEnumerable<Tickets.Models.TicketReportDto>
+@{
+    ViewData["Title"] = "Ticket List";
+    Layout = "~/Views/Shared/MySidebar.cshtml";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tickets List</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-grid.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-theme-alpine.css">
+    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.noStyle.js"></script>
+    <style>
+        /* Style the table */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .table th, .table td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+            }
+
+            .table th {
+                background-color: #f2f2f2;
+            }
+
+            /* Style the search inputs in the table header */
+            .table .search-input {
+                width: 100%;
+                box-sizing: border-box;
+                padding: 5px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+
+        /* Style for hidden filters */
+        .hidden-filters {
+            display: none;
+        }
+
+        .button-container {
+            color: #00008B;
+            margin-bottom: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: #343a40;
+            color: white;
+        }
+
+        h2.mb-4 {
+            color: #add8e6; /* light blue */
+            text-align: center;
+        }
+
+        .button-container {
+            margin-bottom: 20px;
+        }
+
+        .filter-button {
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 25px;
+        }
+
+            .filter-button:hover {
+                background-color: #0056b3;
+            }
+    </style>
+</head>
+<body>
+    
+        <h2>Ticket List</h2>
+        @* <div class="button-container">
+            <a asp-action="Dashboard" asp-controller="Home" class="btn btn-primary">Go to Dashboard</a>
+        </div> *@
+    
+   @*  <form method="get" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <label for="startDate" style="font-size: 16px; margin-right: 5px;">Start Date:</label>
+        <input type="date" id="startDate" name="startDate" style="font-size: 16px; padding: 8px;" />
+
+        <label for="endDate" style="font-size: 16px; margin-right: 5px;">End Date:</label>
+        <input type="date" id="endDate" name="endDate" style="font-size: 16px; padding: 8px;" />
+
+        <button type="submit" style="font-size: 16px; padding: 10px;">Filter</button>
+    </form> *@
+   @*  <form method="get" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;"onsubmit="return validateDates();">
+        <label for="startDate" style="font-size: 16px; margin-right: 5px;">Start Date:</label>
+        <input type="date" id="startDate" name="startDate" style="font-size: 16px; padding: 8px;" value="@ViewBag.StartDate" />
+
+        <label for="endDate" style="font-size: 16px; margin-right: 5px;">End Date:</label>
+        <input type="date" id="endDate" name="endDate" style="font-size: 16px; padding: 8px;" value="@ViewBag.EndDate" />
+
+        <button type="submit" class="filter-button">Filter</button>
+    </form> *@
+
+    <form method="get" style="display: flex; align-items: flex-start; gap: 10px; flex-wrap: wrap;" onsubmit="return validateDates();">
+        <div style="display: flex; flex-direction: column; margin-bottom: 10px;">
+            <label for="startDate" style="font-size: 16px; margin-bottom: 5px;">Start Date:</label>
+            <input type="date" id="startDate" name="startDate" style="font-size: 16px; padding: 8px;" value="@ViewBag.StartDate" />
+        </div>
+
+        <div style="display: flex; flex-direction: column; margin-bottom: 10px;">
+            <label for="endDate" style="font-size: 16px; margin-bottom: 5px;">End Date:</label>
+            <input type="date" id="endDate" name="endDate" style="font-size: 16px; padding: 8px;" value="@ViewBag.EndDate" />
+        </div>
+
+        <button type="submit" class="filter-button">Filter</button>
+    </form>
+
+
+
+    <div id="myGrid" class="ag-theme-alpine" style="height: 500px; width: 100%;"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // var statusMapping = {
+            //     0: 'Open',
+            //     1: 'Pending',
+            //     2: 'Resolved',
+            //     3: 'Closed'
+            //     // Add other status mappings as needed
+            // };
+            // Function to format date in yy-mm-dd format
+            function formatDate(value) {
+                if (!value) return '';
+                var date = new Date(value);
+                var year = date.getFullYear().toString().slice(-2); // Get last two digits of the year
+                var month = ('0' + (date.getMonth() + 1)).slice(-2); // Get month and pad with zero if needed
+                var day = ('0' + date.getDate()).slice(-2); // Get day and pad with zero if needed
+                return `${year}-${month}-${day}`;
+            }
+            var gridOptions = {
+                columnDefs: [
+                    { headerName: 'Id', field: 'id', sortable: true, filter: true, width: 80, pinned: 'left' },
+                    // { headerName: 'Ticket No', field: 'ticketNo', sortable: true, filter: true },
+                    { headerName: 'Subject', field: 'subject', sortable: true, filter: true },
+                    { headerName: 'Ticket Body', field: 'ticketBody', sortable: true, filter: true, autoHeight: true, wrapText: true },
+                    // { headerName: 'Created At', field: 'createdAt', sortable: true, filter: true },
+                    {
+                        headerName: 'Created At', field: 'createdAt', sortable: true, filter: true, width: 80, valueFormatter: function (params) {
+                            return formatDate(params.value);
+                        }
+                    },
+                    { headerName: 'Priority', field: 'priority', sortable: true, filter: true, width:100 },
+                    // { headerName: 'Deadline', field: 'deadline', sortable: true, filter: true },
+                    // { headerName: 'Status', field: 'status', sortable: true, filter: true },
+                    { headerName: 'Status', field: 'status', sortable: true, filter: true, width: 100 },
+                    { headerName: 'Assigned to User ID', field: 'assignedUserEmail', sortable: true, filter: true, width:150 },
+                    { headerName: 'Assigned by Email', field: 'assignedByEmail', sortable: true, filter: true, width:150 },// Added Status column
+                     {
+                         headerName: 'Actions',
+                         field: 'id',
+                        pinned: 'right',
+                         cellRenderer: function (params) {
+                             return '<a href="/Ticket/Edit/' + params.value + '" class="btn btn-warning btn-sm">Edit</a>';
+                         },
+                         width:80
+                     }
+                ],
+                rowData: @Html.Raw(Json.Serialize(Model))
+                    };
+
+            var gridDiv = document.querySelector('#myGrid');
+            new agGrid.Grid(gridDiv, gridOptions);
+        });
+    </script>
+
+       <script>
+        function validateDates() {
+            const startDate = new Date(document.getElementById("startDate").value);
+            const endDate = new Date(document.getElementById("endDate").value);
+
+            if (endDate < startDate) {
+                alert("End Date cannot be less than Start Date.");
+                return false; // Prevent form submission
+            }
+
+            return true; // Allow form submission
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Dell\\Desktop\\Tickets\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{9739702E-FBB9-4612-A576-655D8DACE8CF}|Tickets\\Tickets.csproj|c:\\users\\dell\\desktop\\tickets\\tickets\\views\\ticket\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{9739702E-FBB9-4612-A576-655D8DACE8CF}|Tickets\\Tickets.csproj|solutionrelative:tickets\\views\\ticket\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9739702E-FBB9-4612-A576-655D8DACE8CF}|Tickets\\Tickets.csproj|c:\\users\\dell\\desktop\\tickets\\tickets\\views\\ticket\\prioritydistribution.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{9739702E-FBB9-4612-A576-655D8DACE8CF}|Tickets\\Tickets.csproj|solutionrelative:tickets\\views\\ticket\\prioritydistribution.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9739702E-FBB9-4612-A576-655D8DACE8CF}|Tickets\\Tickets.csproj|c:\\users\\dell\\desktop\\tickets\\tickets\\views\\report\\generatereport.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{9739702E-FBB9-4612-A576-655D8DACE8CF}|Tickets\\Tickets.csproj|solutionrelative:tickets\\views\\report\\generatereport.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9739702E-FBB9-4612-A576-655D8DACE8CF}|Tickets\\Tickets.csproj|c:\\users\\dell\\desktop\\tickets\\tickets\\controllers\\ticketcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9739702E-FBB9-4612-A576-655D8DACE8CF}|Tickets\\Tickets.csproj|solutionrelative:tickets\\controllers\\ticketcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\Dell\\Desktop\\Tickets\\Tickets\\Views\\Ticket\\Index.cshtml",
+              "RelativeDocumentMoniker": "Tickets\\Views\\Ticket\\Index.cshtml",
+              "ToolTip": "C:\\Users\\Dell\\Desktop\\Tickets\\Tickets\\Views\\Ticket\\Index.cshtml",
+              "RelativeToolTip": "Tickets\\Views\\Ticket\\Index.cshtml",
+              "ViewState": "AQIAADYAAAAAAAAAAAAAAEoAAAAaAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-10-28T07:08:00.082Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "PriorityDistribution.cshtml",
+              "DocumentMoniker": "C:\\Users\\Dell\\Desktop\\Tickets\\Tickets\\Views\\Ticket\\PriorityDistribution.cshtml",
+              "RelativeDocumentMoniker": "Tickets\\Views\\Ticket\\PriorityDistribution.cshtml",
+              "ToolTip": "C:\\Users\\Dell\\Desktop\\Tickets\\Tickets\\Views\\Ticket\\PriorityDistribution.cshtml",
+              "RelativeToolTip": "Tickets\\Views\\Ticket\\PriorityDistribution.cshtml",
+              "ViewState": "AQIAABMBAAAAAAAAAAAAACIBAABYAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-10-28T06:54:15.574Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "GenerateReport.cshtml",
+              "DocumentMoniker": "C:\\Users\\Dell\\Desktop\\Tickets\\Tickets\\Views\\Report\\GenerateReport.cshtml",
+              "RelativeDocumentMoniker": "Tickets\\Views\\Report\\GenerateReport.cshtml",
+              "ToolTip": "C:\\Users\\Dell\\Desktop\\Tickets\\Tickets\\Views\\Report\\GenerateReport.cshtml",
+              "RelativeToolTip": "Tickets\\Views\\Report\\GenerateReport.cshtml",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-10-28T06:53:48.754Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "TicketController.cs",
+              "DocumentMoniker": "C:\\Users\\Dell\\Desktop\\Tickets\\Tickets\\Controllers\\TicketController.cs",
+              "RelativeDocumentMoniker": "Tickets\\Controllers\\TicketController.cs",
+              "ToolTip": "C:\\Users\\Dell\\Desktop\\Tickets\\Tickets\\Controllers\\TicketController.cs",
+              "RelativeToolTip": "Tickets\\Controllers\\TicketController.cs",
+              "ViewState": "AQIAAKACAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-28T05:12:49.677Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+﻿@{
+    ViewData["Title"] = "Signup";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/css/login.css">
+    <style>
+        body {
+            background-image: url('/images/login.jpeg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center center;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            z-index: 1;
+        }
+
+        .card {
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container d-flex justify-content-center align-items-center min-vh-100">
+        <div class="card shadow-sm p-4" style="max-width: 400px; width: 100%;">
+            <h1 class="card-title text-center mb-4">Signup</h1>
+            <form asp-action="Signup" method="post">
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" class="form-control" required />
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" class="form-control" required />
+                    <div id="passwordFeedback" class="password-feedback"></div>
+
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password:</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" required />
+                </div>
+                <div class="form-group">
+                    <label for="role">Role:</label>
+                    <select id="role" name="role" class="form-control">
+                        <option value="User">User</option>
+                        <option value="TeamLead">Team Lead</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-block">Signup</button>
+                </div>
+                <div class="form-group text-center">
+                    <p class="text-danger">@ViewBag.ErrorMessage</p>
+                    <a href="@Url.Action("Login", "Account")">Already have an account? Login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        function validatePassword() {
+            var password = document.getElementById('password').value;
+            var feedback = document.getElementById('passwordFeedback');
+            var messages = [];
+
+            if (password.length < 8) {
+                messages.push("Password must be at least 8 characters long.");
+            }
+            if (!/[a-zA-Z]/.test(password)) {
+                messages.push("Password must include at least one letter.");
+            }
+            if (!/[0-9]/.test(password)) {
+                messages.push("Password must include at least one number.");
+            }
+
+            feedback.innerHTML = messages.join("<br>");
+            feedback.className = "password-feedback " + (messages.length === 0 ? "valid" : "");
+        }
+
+        document.getElementById('password').addEventListener('input', validatePassword);
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,195 @@
+﻿@{
+    ViewData["Title"] = "Ticket Status";
+}
+
+<h2>Ticket Status</h2>
+
+<canvas id="statusChart"></canvas>
+<div id="ticketTableContainer"></div> <!-- Container for the ticket tables -->
+
+<style>
+    /* Style for the canvas element */
+    #statusChart {
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        width: 100%; /* Makes the canvas responsive */
+        max-width: 600px; /* Sets a maximum width */
+        height: 300px; /* Sets a fixed height */
+        display: block; /* Ensures the canvas is a block element */
+        margin: 0 auto; /* Centers the canvas horizontally */
+    }
+
+    /* Style for the table container */
+    #ticketTableContainer {
+        margin-top: 20px;
+    }
+
+    /* Table styling */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 16px;
+        min-width: 400px;
+    }
+
+    th, td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #f2f2f2;
+        color: #333;
+    }
+
+    tr:hover {
+        background-color: #f5f5f5;
+    }
+</style>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+
+    <script>
+        $(document).ready(function () {
+            // Load complete ticket table initially
+            $.ajax({
+                url: '@Url.Action("GetAllTickets")',
+                type: 'GET',
+                success: function (tickets) {
+                    var table = generateTicketTable(tickets);
+                    $('#ticketTableContainer').html(table);
+                    initializeDataTable();
+                }
+            });
+
+            // Load chart data
+            $.ajax({
+                url: '@Url.Action("GetStatusData")',
+                type: 'GET',
+                success: function (data) {
+                    var ctx = document.getElementById('statusChart').getContext('2d');
+                    var statusChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: data.map(d => d.status),
+                            datasets: [{
+                                label: 'Ticket Status Distribution',
+                                data: data.map(d => d.count),
+                                backgroundColor: function (context) {
+                                    var index = context.dataIndex;
+                                    var status = context.chart.data.labels[index];
+
+                                    switch (status) {
+                                        case 'Open':
+                                            return 'rgba(255, 99, 132, 0.2)'; // Red
+                                        case 'Closed':
+                                            return 'rgba(54, 162, 235, 0.2)'; // Blue
+                                        case 'Pending':
+                                            return 'rgba(255, 206, 86, 0.2)'; // Yellow
+                                        case 'Resolved':
+                                            return 'rgba(75, 192, 192, 0.2)'; // Green
+                                        default:
+                                            return 'rgba(201, 203, 207, 0.2)'; // Default Gray
+                                    }
+                                },
+                                borderColor: function (context) {
+                                    var index = context.dataIndex;
+                                    var status = context.chart.data.labels[index];
+
+                                    switch (status) {
+                                        case 'Open':
+                                            return 'rgba(255, 99, 132, 1)'; // Red
+                                        case 'Closed':
+                                            return 'rgba(54, 162, 235, 1)'; // Blue
+                                        case 'Pending':
+                                            return 'rgba(255, 206, 86, 1)'; // Yellow
+                                        case 'Resolved':
+                                            return 'rgba(75, 192, 192, 1)'; // Green
+                                        default:
+                                            return 'rgba(201, 203, 207, 1)'; // Default Gray
+                                    }
+                                },
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            onClick: function (event, chartElement) {
+                                if (chartElement.length > 0) {
+                                    var index = chartElement[0].index;
+                                    var status = statusChart.data.labels[index];
+                                    showTicketsByStatus(status);
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    stacked: true
+                                },
+                                y: {
+                                    beginAtZero: true
+                                }
+                            },
+                            elements: {
+                                bar: {
+                                    barThickness: 20, // Adjust this value to control bar width
+                                    borderWidth: 2
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        function showTicketsByStatus(status) {
+            $.ajax({
+                url: '@Url.Action("GetTicketsByStatus")',
+                type: 'GET',
+                data: { status: status },
+                success: function (tickets) {
+                    var table = generateTicketTable(tickets);
+                    $('#ticketTableContainer').html(table);
+                    initializeDataTable();
+                }
+            });
+        }
+
+        function generateTicketTable(tickets) {
+            var tableHtml = '<table id="ticketTable" border="1" style="width: 100%; border-collapse: collapse;">';
+            tableHtml += '<thead><tr><th>Id</th><th>Subject</th><th>Ticket Body</th><th>Created At</th><th>Priority</th><th>Status</th></tr></thead>';
+            tableHtml += '<tbody>';
+
+            tickets.forEach(function (ticket) {
+                tableHtml += '<tr>';
+                // tableHtml += '<td>' + ticket.ticketNo + '</td>';
+                tableHtml += '<td>' + ticket.id + '</td>';
+                tableHtml += '<td>' + ticket.subject + '</td>';
+                tableHtml += '<td>' + ticket.ticketBody + '</td>';
+                tableHtml += '<td>' + new Date(ticket.createdAt).toLocaleDateString() + '</td>';
+                tableHtml += '<td>' + ticket.priority + '</td>';
+                tableHtml += '<td>' + ticket.status + '</td>';
+                tableHtml += '</tr>';
+            });
+
+            tableHtml += '</tbody>';
+            tableHtml += '</table>';
+            return tableHtml;
+        }
+
+        function initializeDataTable() {
+            $('#ticketTable').DataTable({
+                paging: true,
+                searching: true,
+                ordering: true,
+                order: [[0, 'asc']],
+                lengthChange: true,
+                info: true
+            });
+        }
+    </script>
+}

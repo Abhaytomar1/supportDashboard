@@ -1,0 +1,503 @@
+﻿@* @model Tickets.Models.DashboardViewModel
+@{
+    Layout = null;
+} *@
+
+@model Tickets.Models.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/MySidebar.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Sidebar</title>
+    @* <link rel="stylesheet" href="~/css/dashboard.css" /> *@
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/chart-setup.js"></script>
+
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+       
+        /* General styles for charts and tables */
+        .charts-container {
+            display: flex;
+            
+            flex-wrap: wrap;
+            gap: 20px; /* Spacing between chart containers */
+            padding: 20px; /* Optional padding around the container */
+            overflow-x: auto; /* Enable horizontal scroll if necessary */
+            box-sizing: border-box;
+        }
+
+        .chart-container {
+            position: relative;
+            flex: 1 1 calc(50% - 20px); /* Adjusts width based on available space */
+            min-width: 300px; /* Ensures a minimum width for smaller screens */
+            max-width: 100%;
+            margin: 10px 0; /* Vertical margin for spacing */
+            box-sizing: border-box; /* Ensures padding and border are included in width/height */
+        }
+
+        #priorityPieChart, #statusChart, #ticketCreated, #statusChartD {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            width: 100%;
+            height: 300px; /* Adjust height as needed */
+            box-sizing: border-box; /* Ensures padding and border are included in width/height */
+        }
+
+        canvas {
+            width: 100% !important; /* Ensure canvas scales with container width */
+            height: 80% !important; /* Maintain aspect ratio */
+            max-height: 300px; /* Set a maximum height to prevent overflow */
+        }
+
+        /* Additional styling to ensure text is below the chart */
+        .chart-container h3 {
+            margin: 10px 0; /* Margin to space text from the chart */
+            text-align: center; /* Center the text */
+        }
+
+        .chart-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center align the content */
+        }
+
+        #timePeriod {
+            position: absolute;
+            top: 42px; /* Chart ke upar ke edge se distance */
+            right: 20px; /* Chart ke right edge se distance */
+            z-index: 15; /* Ensure ki select box chart ke upar ho */
+            background-color: rgba(255, 255, 255, 0.8); /* Background color to make it visible */
+            padding: 5px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .filter-form {
+            display: flex;
+            align-items: center;
+            gap: 15px; /* Adjust the gap between elements */
+            flex-wrap: wrap; /* Allows wrapping on smaller screens */
+        }
+
+            .filter-form .form-group {
+                display: flex;
+                flex-direction: column;
+                margin-right: 10px; /* Adjust spacing between form groups */
+            }
+
+            .filter-form label {
+                margin-bottom: 5px;
+            }
+
+            .filter-form input[type="date"],
+            .filter-form select {
+                padding: 5px;
+                font-size: 14px;
+            }
+
+        .filter-button {
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+            .filter-button:hover {
+                background-color: #0056b3;
+            }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+
+        <main class="content">
+          @*   <form method="get" action="@Url.Action("Dashboard", "Home")" class="filter-form">
+                <div class="form-group">
+                    <label for="startDate">Start Date:</label>
+                    <input type="date" id="startDate" name="startDate" value="@Model.StartDate.ToString("yyyy-MM-dd")">
+                </div>
+
+                <div class="form-group">
+                    <label for="endDate">End Date:</label>
+                    <input type="date" id="endDate" name="endDate" value="@Model.EndDate.ToString("yyyy-MM-dd")">
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="AssignedUserId" class="form-label">Assigned User:</label>
+                    <select asp-for="AssignedUserId" class="form-control" asp-items="ViewBag.UserOptions">
+                        <option value="">Select User</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="AssignedByEmail" class="form-label">Assigned By:</label>
+                    <select asp-for="AssignedByEmail" class="form-control" asp-items="ViewBag.LeadOptions">
+                        <option value="">Select User</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="filter-button">Filter</button>
+            </form> *@
+            <form method="get" action="@Url.Action("Dashboard", "Home")" class="filter-form" id="filterForm">
+                <div class="form-group">
+                    <label for="startDate">Start Date:</label>
+                    <input type="date" id="startDate" name="startDate" value="@Model.StartDate.ToString("yyyy-MM-dd")" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="endDate">End Date:</label>
+                    <input type="date" id="endDate" name="endDate" value="@Model.EndDate.ToString("yyyy-MM-dd")" required>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="AssignedUserId" class="form-label">Assigned User:</label>
+                    <select asp-for="AssignedUserId" class="form-control" asp-items="ViewBag.UserOptions">
+                        <option value="">Select User</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="AssignedByEmail" class="form-label">Assigned By:</label>
+                    <select asp-for="AssignedByEmail" class="form-control" asp-items="ViewBag.LeadOptions">
+                        <option value="">Select User</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="filter-button">Filter</button>
+            </form>
+           
+            <div class="charts-container">
+               
+                <!-- Priority Pie Chart -->
+                <div class="chart-container">
+                    <h3>Ticket Priority Distribution</h3>
+                    <canvas id="priorityPieChart"></canvas>
+                </div>
+
+                <div class="chart-container">
+                    <h3>Ticket Created</h3>
+                    <select id="timePeriod" aria-label="Select Time Period">
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="yearly">Yearly</option>
+                    </select>
+                    <canvas id="ticketCreated"></canvas>
+                </div>
+
+                <div class="chart-container">
+                    <h3>Ticket Status Distribution</h3>
+                    <canvas id="statusChartD"></canvas>
+
+                </div>
+                @* <!-- Status Bar Chart -->
+                <div class="chart-container">
+                    <h3>Ticket Status Distribution</h3>
+                    <canvas id="statusChart"></canvas>
+
+                </div> *@
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        var ctx = document.getElementById('priorityPieChart').getContext('2d');
+        var priorityPieChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['High', 'Medium', 'Low'],
+                datasets: [{
+                    data: [@Model.HighPriorityTickets, @Model.MediumPriorityTickets, @Model.LowPriorityTickets],
+                    backgroundColor: ['#FF6384', '#FFCE56', '#36A2EB']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    </script>
+
+   @*  <script>
+        var ctx = document.getElementById('statusChartD').getContext('2d');
+        var statusChartD = new Chart(ctx, {
+            type: 'bar', // You can also use 'pie' or 'doughnut' if you prefer
+            data: {
+                labels: ['Open', 'Pending', 'Resolved', 'Closed'], // Labels for individual bars
+                datasets: [{
+                    data: @Html.Raw(Json.Serialize(Model.StatusChartData.Select(s => s.Count))), // Ensure this returns correct counts
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.2)', // Open
+                        'rgba(54, 162, 235, 0.2)', // Pending
+                        'rgba(255, 206, 86, 0.2)', // Resolved
+                        'rgba(255, 99, 132, 0.2)'  // Closed
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',   // Open
+                        'rgba(54, 162, 235, 1)',   // Pending
+                        'rgba(255, 206, 86, 1)',   // Resolved
+                        'rgba(255, 99, 132, 1)'    // Closed
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false // Disable the global label 'Ticket Status Distribution'
+                    }
+                }
+            }
+        });
+    </script> *@
+    <script>
+        var ctx = document.getElementById('statusChartD').getContext('2d');
+        var statusChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.StatusChartData
+             .Where(s => s.Status != null) // Ensure no undefined labels
+             .OrderBy(s => s.Status == "Open" ? 0 : s.Status == "Pending" ? 1 : s.Status == "Resolved" ? 2 : 3)
+             .Select(s => s.Status))),
+                datasets: [{
+                    data: @Html.Raw(Json.Serialize(Model.StatusChartData
+               .Where(s => s.Status != null) // Ensure no undefined data points
+               .OrderBy(s => s.Status == "Open" ? 0 : s.Status == "Pending" ? 1 : s.Status == "Resolved" ? 2 : 3)
+               .Select(s => s.Count))),
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(153, 102, 255, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(153, 102, 255, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false // Hide any automatically generated labels
+                    }
+                }
+            }
+        });
+    </script>
+
+
+   @*   <script>
+        var ctx = document.getElementById('statusChartD').getContext('2d');
+        var statusChart = new Chart(ctx, {
+            type: 'bar', // You can also use 'pie' or 'doughnut' if you prefer
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.StatusChartData.Select(s => s.Status))),
+                datasets: [{
+                    label: 'Ticket Status Distribution',
+                    data: @Html.Raw(Json.Serialize(Model.StatusChartData.Select(s => s.Count))),
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(153, 102, 255, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(153, 102, 255, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>  *@
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var ctx = document.getElementById('ticketCreated').getContext('2d');
+            var ticketsCreatedData = @Html.Raw(Json.Serialize(Model.TicketsCreatedByDate));
+            var chart = null;
+
+            function updateChart(period) {
+                var transformedData = transformData(ticketsCreatedData, period);
+                var dates = transformedData.map(data => data.date);
+                var counts = transformedData.map(data => data.count);
+
+                if (chart) {
+                    chart.destroy();
+                }
+
+                chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: dates,
+                        datasets: [{
+                            label: 'Tickets Created',
+                            data: counts,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: getAxisTitle(period)
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Count'
+                                },
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            function getAxisTitle(period) {
+                switch (period) {
+                    case 'daily':
+                        return 'Date';
+                    case 'weekly':
+                        return 'Week';
+                    case 'monthly':
+                        return 'Month';
+                    case 'yearly':
+                        return 'Year';
+                    default:
+                        return 'Date';
+                }
+            }
+
+            function transformData(data, period) {
+                const groupedData = {};
+
+                data.forEach(item => {
+                    let key;
+                    const date = new Date(item.date);
+                    switch (period) {
+                        case 'daily':
+                            key = date.toLocaleDateString(); // Format date as MM/DD/YYYY
+                            break;
+                        case 'weekly':
+                            key = `${date.getFullYear()}-W${getWeekNumber(date)}`;
+                            break;
+                        case 'monthly':
+                            key = `${date.getFullYear()}-${date.getMonth() + 1}`;
+                            break;
+                        case 'yearly':
+                            key = `${date.getFullYear()}`;
+                            break;
+                    }
+
+                    if (!groupedData[key]) {
+                        groupedData[key] = 0;
+                    }
+                    groupedData[key] += item.count;
+                });
+
+                return Object.keys(groupedData).map(key => ({
+                    date: key,
+                    count: groupedData[key]
+                }));
+            }
+
+            function getWeekNumber(date) {
+                const startDate = new Date(date.getFullYear(), 0, 1);
+                const days = Math.floor((date - startDate) / (24 * 60 * 60 * 1000));
+                return Math.ceil((days + 1) / 7);
+            }
+
+            document.getElementById('timePeriod').addEventListener('change', function () {
+                updateChart(this.value);
+            });
+
+            // Initial chart rendering
+            updateChart('daily'); // Set default period if needed
+        });
+
+    </script>
+
+    <script>
+        document.getElementById("filterForm").onsubmit = function (event) {
+            const startDateInput = document.getElementById("startDate");
+            const endDateInput = document.getElementById("endDate");
+
+            const startDate = new Date(startDateInput.value);
+            const endDate = new Date(endDateInput.value);
+
+            // Check if endDate is less than startDate
+            if (endDate < startDate) {
+                event.preventDefault(); // Prevent form submission
+                alert("End date cannot be less than start date."); // Show an alert
+            }
+        };
+    </script>
+   
+
+</body>
+</html>

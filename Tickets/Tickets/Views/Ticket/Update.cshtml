@@ -1,0 +1,68 @@
+﻿@model Tickets.Models.Ticket
+@{
+    ViewData["Title"] = "Update Ticket";
+    Layout = "~/Views/Shared/MySidebarU.cshtml";
+}
+
+<h2>Update Ticket</h2>
+
+<!-- Link to the CSS file -->
+<link rel="stylesheet" href="~/css/edit-ticket.css" />
+
+<form asp-action="Update">
+   @*  <div class="form-group">
+        <label asp-for="TicketNo" class="control-label"></label>
+        <input asp-for="TicketNo" class="form-control" readonly />
+        <span asp-validation-for="TicketNo" class="text-danger"></span>
+    </div> *@
+    <div class="form-group">
+        <label asp-for="Id" class="control-label"></label>
+        <input asp-for="Id" class="form-control read-only-field" readonly />
+        <span asp-validation-for="Id" class="text-danger"></span>
+    </div>
+     <div class="form-group">
+        <label asp-for="Subject" class="control-label"></label>
+        <input asp-for="Subject" class="form-control read-only-field" readonly />
+        <span asp-validation-for="Subject" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="TicketBody" class="control-label"></label>
+        <textarea asp-for="TicketBody" class="form-control read-only-field" readonly></textarea>
+        <span asp-validation-for="TicketBody" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Priority" class="control-label"></label>
+        <textarea asp-for="Priority" class="form-control read-only-field" readonly></textarea>
+        <span asp-validation-for="Priority" class="text-danger"></span>
+    </div> 
+    <div class="form-group">
+        <label asp-for="Status" class="control-label"></label>
+        <select asp-for="Status" class="form-control">
+            <option>Open</option>
+            <option>Pending</option>
+            <option>Resolved</option>
+            <option>Closed</option>
+        </select>
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+   @*  <div class="form-group">
+        <label for="deadline">Set Deadline:</label>
+        <input type="date" id="deadline" name="Deadline" class="form-control" readonly />
+        <span asp-validation-for="Deadline" class="text-danger"></span>
+    </div> *@
+    <!-- New User Assignment Field -->
+    <div class="form-group">
+        <label asp-for="AssignedUserId" class="form-label"></label>
+        <textarea asp-for="AssignedUserId" class="form-control read-only-field" asp-items="ViewBag.UserOptions" readonly></textarea>
+        <span asp-validation-for="AssignedUserId" class="text-danger" ></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="AssignedByEmail" class="form-label"></label>
+        <textarea asp-for="AssignedByEmail" class="form-control read-only-field" asp-items="ViewBag.LeadOptions" readonly></textarea>
+        <span asp-validation-for="AssignedByEmail" class="text-danger"></span>
+    </div>
+
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-primary">Save</button>
+    @* <a asp-action="Index" class="btn btn-secondary">Cancel</a> *@
+</form>

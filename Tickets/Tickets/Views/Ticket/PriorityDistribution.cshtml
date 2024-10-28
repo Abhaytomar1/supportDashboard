@@ -1,0 +1,308 @@
+﻿@{
+    ViewData["Title"] = "Priority chart";
+    Layout = "~/Views/Shared/MySidebar.cshtml";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ticket Priority and Status Distribution</title>
+    <!-- Include necessary scripts and styles -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- DataTables Scripts and Styles -->
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <style>
+        .charts-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            height: 300px;
+            margin: auto;
+        }
+
+        #priorityChart, #statusChart {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            width: 100% !important;
+            height: 80% !important;
+        }
+        /* Table styling */
+        .ticket-table {
+            margin-top: 20px;
+            width: 100%;
+            display: table;
+        }
+
+            .ticket-table table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            .ticket-table th, .ticket-table td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+                cursor: pointer;
+            }
+
+                .ticket-table th.sort-asc::after {
+                    content: ' ▲';
+                }
+
+                .ticket-table th.sort-desc::after {
+                    content: ' ▼';
+                }
+
+            .ticket-table th {
+                background-color: #f2f2f2;
+            }
+
+        .filter-input {
+            width: 100%;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Clear Filter Button */
+        .clear-filter {
+            margin: 10px 0;
+            display: none;
+            padding: 5px 10px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .page-heading {
+            margin-top: 0; /* Remove any default margin */
+            padding-top: 10px; /* Optional: Add some padding for better appearance */
+            text-align: left; /* Center-align the heading */
+        }
+
+       
+
+
+
+    </style>
+</head>
+<body>
+
+    <h2>Ticket Priority and Status Distribution</h2>
+
+    <div class="charts-container">
+        <!-- Priority Chart -->
+        <div class="chart-container">
+            <h3>Ticket Priority Distribution</h3>
+            <canvas id="priorityChart"></canvas>
+            
+        </div>
+
+        <!-- Status Chart -->
+        <div class="chart-container">
+            <h3>Ticket Status Distribution</h3>
+            <canvas id="statusChart"></canvas>
+            
+        </div>
+    </div>
+
+    <!-- Clear Filter Button -->
+    <button id="clearFilterButton" class="clear-filter">Clear All Filters</button>
+
+    @* <!-- Filter input -->
+    <input type="text" id="filterInput" class="filter-input" placeholder="Search tickets..."> *@
+
+    <!-- Single table for displaying tickets -->
+    <div class="ticket-table">
+        <h3 class="ticket-list-heading">TICKET LIST</h3>
+        <table id="ticketTable">
+            <thead>
+                <tr>
+                   
+                    <th data-column="Id">Id</th>
+                    <th data-column="Subject">Subject</th>
+                    <th data-column="TicketBody">Ticket Body</th>
+                    <th data-column="CreatedAt">Created At</th>
+                    <th data-column="Priority">Priority</th>
+                    <th data-column="Status">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ticket in Model.AllTickets)
+                {
+                    <tr data-priority="@ticket.Priority" data-status="@ticket.Status">
+                      
+                        <td>@ticket.Id</td>
+                        <td>@ticket.Subject</td>
+                        <td>@ticket.TicketBody</td>
+                        <td>@ticket.CreatedAt.ToString("yyyy-MM-dd")</td>
+                        <td>@ticket.Priority</td>
+                        <td>@ticket.Status</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        var tickets = [];
+        @foreach (var ticket in Model.AllTickets)
+        {
+            <text>
+                tickets.push({
+                    id: '@ticket.Id',
+                    subject: '@ticket.Subject',
+                    ticketBody: '@ticket.TicketBody',
+                    createdAt: '@ticket.CreatedAt.ToString("yyyy-MM-dd")',
+                    priority: '@ticket.Priority',
+                    status: '@ticket.Status'
+                });
+            </text>
+        }
+
+                var priorityCtx = document.getElementById('priorityChart').getContext('2d');
+        var priorityChart = new Chart(priorityCtx, {
+            type: 'pie',
+            data: {
+                labels: ['High Priority', 'Medium Priority', 'Low Priority'],
+                datasets: [{
+                    data: [
+                        tickets.filter(t => t.priority === 'High').length,
+                        tickets.filter(t => t.priority === 'Medium').length,
+                        tickets.filter(t => t.priority === 'Low').length
+                    ],
+                    backgroundColor: ['#FF6384', '#FFCE56', '#36A2EB']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                onClick: function (event, elements) {
+                    if (elements.length > 0) {
+                        var index = elements[0].index;
+                        filterTableByPriority(index);
+                    }
+                }
+            }
+        });
+
+        var statusCtx = document.getElementById('statusChart').getContext('2d');
+        var statusOrder = ['Open', 'Pending', 'Resolved', 'Closed'];
+        var statusCounts = { 'Open': 0, 'Pending': 0, 'Resolved': 0, 'Closed': 0 };
+
+        tickets.forEach(function (ticket) {
+            if (statusCounts[ticket.status] !== undefined) {
+                statusCounts[ticket.status]++;
+            }
+        });
+
+        var statusLabels = statusOrder;
+        var statusData = statusOrder.map(function (status) {
+            return statusCounts[status] || 0;
+        });
+
+        var statusChart = new Chart(statusCtx, {
+            type: 'bar',
+            data: {
+                labels: statusLabels,
+                datasets: [{
+                    label: 'Ticket Status Distribution',
+                    data: statusData,
+                    backgroundColor: function (context) {
+                        var index = context.dataIndex;
+                        var status = context.chart.data.labels[index];
+                        switch (status) {
+                            case 'Open': return 'rgba(255, 99, 132, 0.2)';
+                            case 'Pending': return 'rgba(255, 206, 86, 0.2)';
+                            case 'Resolved': return 'rgba(75, 192, 192, 0.2)';
+                            case 'Closed': return 'rgba(54, 162, 235, 0.2)';
+                        }
+                    },
+                    borderColor: function (context) {
+                        var index = context.dataIndex;
+                        var status = context.chart.data.labels[index];
+                        switch (status) {
+                            case 'Open': return 'rgba(255, 99, 132, 1)';
+                            case 'Pending': return 'rgba(255, 206, 86, 1)';
+                            case 'Resolved': return 'rgba(75, 192, 192, 1)';
+                            case 'Closed': return 'rgba(54, 162, 235, 1)';
+                        }
+                    },
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                onClick: function (event, elements) {
+                    if (elements.length > 0) {
+                        var index = elements[0].index;
+                        var status = statusChart.data.labels[index];
+                        filterTableByStatus(status);
+                    }
+                },
+                scales: {
+                    x: { stacked: true },
+                    y: { beginAtZero: true }
+                },
+                plugins: {
+                    legend: {
+                        display: false // Disable the global label 'Ticket Status Distribution'
+                    }
+                }
+            }
+        });
+
+        // Initialize DataTables
+        var table = $('#ticketTable').DataTable({
+            "searching": true,
+            "ordering": true,
+            "paging": false
+        });
+
+       
+        function filterTableByPriority(index) {
+            var priorityMap = ['High', 'Medium', 'Low'];
+            var selectedPriority = priorityMap[index];
+            document.querySelectorAll('#ticketTable tbody tr').forEach(function (row) {
+                row.style.display = row.getAttribute('data-priority') === selectedPriority ? '' : 'none';
+            });
+            document.getElementById('clearFilterButton').style.display = 'inline-block';
+        }
+
+        function filterTableByStatus(status) {
+            document.querySelectorAll('#ticketTable tbody tr').forEach(function (row) {
+                row.style.display = row.getAttribute('data-status') === status ? '' : 'none';
+            });
+            document.getElementById('clearFilterButton').style.display = 'inline-block';
+        }
+
+        function clearFilters() {
+            document.querySelectorAll('#ticketTable tbody tr').forEach(function (row) {
+                row.style.display = '';
+            });
+            document.getElementById('clearFilterButton').style.display = 'none';
+        }
+
+        document.getElementById('clearFilterButton').addEventListener('click', clearFilters);
+
+        $(document).ready(function () {
+            $('#ticketTable').DataTable();
+        });
+    </script>
+</body>
+</html>
