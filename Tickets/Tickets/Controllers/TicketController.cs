@@ -3,7 +3,7 @@ using Tickets.Models;                //This is a custom namespace where your tic
 using System.Threading.Tasks;
 using YourNamespace.Data;                 //A placeholder namespace where your ApplicationDbContext class is located, which handles the database interactions.
 using Microsoft.EntityFrameworkCore;   // This is the Entity Framework Core library, which allows interacting with the database using object-relational mapping (ORM).
-using Microsoft.AspNetCore.Mvc.Rendering;  // Provides support for creating dropdown lists in Razor views (SelectListItem).
+using Microsoft.AspNetCore.Mvc.Rendering;  
 using System.Linq;
 using YourNamespace.Models;
 using System.Security.Claims;
