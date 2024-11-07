@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using YourNamespace.Data;
 using YourNamespace.Models;
 
+
 namespace Tickets.Controllers
 {
     public class AccountController : Controller
